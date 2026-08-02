@@ -13,6 +13,7 @@ dependencies = [
 
 [project.scripts]
 rag = "rag:main"
+rag-index = "rag:index"
 
 [build-system]
 requires = ["uv_build>=0.12.0,<0.13.0"]

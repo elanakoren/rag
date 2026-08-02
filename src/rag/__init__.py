@@ -4,16 +4,13 @@ from rag.transformer import encode
 from rag.store import store_chunks
 import chromadb
 
-def main() -> None:
-    question = input("Ask a question: ")
-    client = chromadb.PersistentClient(path="./chroma_db")
-    encoded_question = encode(question)
+def index() -> None:
     ds = load_dataset("emozilla/pg19", split="train[:50]")
     chunked_text = []
-    encoded_dataset = []
     for text in ds:
         chunked_text.extend(chunk_text(text))
 
+    encoded_dataset = []
     # TODO: Batch for performance
     for chunk in chunked_text:
         encoded_chunk = encode(chunk['text'])
@@ -24,5 +21,11 @@ def main() -> None:
             'position': chunk['position'],
             })
     store_chunks(encoded_dataset)
+
+def main() -> None:
+    question = input("Ask a question: ")
+    encoded_question = encode(question)
+    client = chromadb.PersistentClient(path="./chroma_db")
     collection = client.get_collection(name='pg19')
-    result = collection.query(query_embeddings=[encoded_question], n_results=5)
+    result = collection.query(query_embeddings=[encoded_question.tolist()], n_results=5)
+    print(result)
