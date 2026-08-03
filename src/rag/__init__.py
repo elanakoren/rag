@@ -26,15 +26,19 @@ def index() -> None:
     store_chunks(encoded_dataset)
 
 def main() -> None:
-    question = input("Ask a question: ")
-    encoded_question = encode(question)
     client = chromadb.PersistentClient(path="./chroma_db")
     collection = client.get_collection(name='pg19')
-    result = collection.query(query_embeddings=[encoded_question.tolist()], n_results=5)
-    excerpts = format_result(result)
-    citation_string_result = citation_string(excerpts)
-    answer = call_claude(citation_string_result, question)
-    print(answer)
-    print()
-    print("Sources:")
-    print(citation_key(excerpts))
+    while True:
+        question = input("Ask a question (or 'quit' to exit): ")
+        if question.strip().lower() in ('quit', 'exit', 'q'):
+            break
+        encoded_question = encode(question)
+        result = collection.query(query_embeddings=[encoded_question.tolist()], n_results=5)
+        excerpts = format_result(result)
+        citation_string_result = citation_string(excerpts)
+        answer = call_claude(citation_string_result, question)
+        print(answer)
+        print()
+        print("Sources:")
+        print(citation_key(excerpts))
+        print()
