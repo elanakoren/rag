@@ -2,6 +2,8 @@ from datasets import load_dataset
 from rag.chunking import chunk_text
 from rag.transformer import encode
 from rag.store import store_chunks
+from rag.format import format_result
+from pprint import pprint
 import chromadb
 
 def index() -> None:
@@ -28,4 +30,5 @@ def main() -> None:
     client = chromadb.PersistentClient(path="./chroma_db")
     collection = client.get_collection(name='pg19')
     result = collection.query(query_embeddings=[encoded_question.tolist()], n_results=5)
-    print(result)
+    excerpts = format_result(result)
+    pprint(excerpts)
