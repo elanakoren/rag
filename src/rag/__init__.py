@@ -2,7 +2,8 @@ from datasets import load_dataset
 from rag.chunking import chunk_text
 from rag.transformer import encode
 from rag.store import store_chunks
-from rag.format import format_result
+from rag.format import format_result, citation_string
+from rag.api import call_claude
 from pprint import pprint
 import chromadb
 
@@ -31,4 +32,5 @@ def main() -> None:
     collection = client.get_collection(name='pg19')
     result = collection.query(query_embeddings=[encoded_question.tolist()], n_results=5)
     excerpts = format_result(result)
-    pprint(excerpts)
+    citation_string_result = citation_string(excerpts)
+    result = call_claude(citation_string_result, question)

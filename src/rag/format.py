@@ -9,3 +9,9 @@ def format_result(result) -> list[dict]:
         }
         for document, metadata in zip(documents, metadatas)
     ]
+
+def citation_string(excerpts) -> str:
+    citation_result = ''
+    for i, excerpt in enumerate(excerpts, start=1):
+        citation_result += f"[{i}] ({excerpt['short_book_title']}) \"{excerpt['text']}\"\n\n"
+    return citation_result
