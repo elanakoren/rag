@@ -19,4 +19,4 @@ def call_claude(citation_string, question):
         messages=[{"role": "user", "content": message}],
     )
 
-    print(response.content[0].text)
+    return response.content[0].text

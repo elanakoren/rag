@@ -15,3 +15,10 @@ def citation_string(excerpts) -> str:
     for i, excerpt in enumerate(excerpts, start=1):
         citation_result += f"[{i}] ({excerpt['short_book_title']}) \"{excerpt['text']}\"\n\n"
     return citation_result
+
+def citation_key(excerpts) -> str:
+    lines = [
+        f"[{i}] {excerpt['short_book_title']}, position {excerpt['position']}"
+        for i, excerpt in enumerate(excerpts, start=1)
+    ]
+    return '\n'.join(lines)
