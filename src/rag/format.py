@@ -6,6 +6,7 @@ def format_result(result) -> list[dict]:
             'text': document,
             'short_book_title': metadata['short_book_title'],
             'position': metadata['position'],
+            'percentage': metadata['percentage'],
         }
         for document, metadata in zip(documents, metadatas)
     ]
@@ -18,7 +19,7 @@ def citation_string(excerpts) -> str:
 
 def citation_key(excerpts) -> str:
     lines = [
-        f"[{i}] {excerpt['short_book_title']}, position {excerpt['position']}"
+        f"[{i}] {excerpt['short_book_title']}, {excerpt['percentage']:.1f}% through"
         for i, excerpt in enumerate(excerpts, start=1)
     ]
     return '\n'.join(lines)

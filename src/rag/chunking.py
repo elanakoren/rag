@@ -10,7 +10,12 @@ def chunk_text(book: dict, chunk_size: int = 1000, overlap: int = 200) -> list[d
             end += 1
         chunk = text[start:end].strip()
         if chunk:
-            chunks.append({'short_book_title': book['short_book_title'], 'text': chunk, 'position': start})
+            chunks.append({
+                'short_book_title': book['short_book_title'],
+                'text': chunk,
+                'position': start,
+                'percentage': (start / n) * 100,
+            })
         if end >= n:
             break
         start = end - overlap

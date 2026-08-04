@@ -1,6 +1,6 @@
 import chromadb
 
-def store_chunks(encoded_dataset: list[dict], collection_name: str = "pg19") -> None:
+def store_chunks(encoded_dataset: list[dict], collection_name: str = "library") -> None:
     client = chromadb.PersistentClient(path="./chroma_db")
     collection = client.get_or_create_collection(name=collection_name)
 
@@ -9,7 +9,11 @@ def store_chunks(encoded_dataset: list[dict], collection_name: str = "pg19") -> 
     embeddings = [record['encoded_chunk'].tolist() for record in encoded_dataset]
     documents = [record['text'] for record in encoded_dataset]
     metadatas = [
-        {'short_book_title': record['short_book_title'], 'position': record['position']}
+        {
+            'short_book_title': record['short_book_title'],
+            'position': record['position'],
+            'percentage': record['percentage'],
+        }
         for record in encoded_dataset
     ]
 
