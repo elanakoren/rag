@@ -5,6 +5,7 @@ from rag.format import format_result, citation_string, citation_key
 from rag.api import call_claude
 from rag.epub import parse_epub
 from rag.library import list_books, add_book
+from langfuse import get_client
 import chromadb
 
 def index() -> None:
@@ -69,7 +70,7 @@ def main() -> None:
         encoded_question = encode(question)
         result = collection.query(
             query_embeddings=[encoded_question.tolist()],
-            n_results=5,
+            n_results=15,
             where={
                 "$and": [
                     {"short_book_title": book_title},
@@ -85,3 +86,5 @@ def main() -> None:
         print("Sources:")
         print(citation_key(excerpts))
         print()
+
+    get_client().flush()

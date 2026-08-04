@@ -1,8 +1,9 @@
 import anthropic
 from opentelemetry.instrumentation.anthropic import AnthropicInstrumentor
-from langfuse import propagate_attributes
+from langfuse import get_client, propagate_attributes
 
 AnthropicInstrumentor().instrument()
+get_client()
 
 client = anthropic.Anthropic()
 
