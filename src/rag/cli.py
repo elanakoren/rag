@@ -79,7 +79,7 @@ def main() -> None:
         )
         excerpts = format_result(result)
         citation_string_result = citation_string(excerpts)
-        answer = call_claude(citation_string_result, question)
+        answer = call_claude(citation_string_result, question, book_title, current_percentage)
         print(answer)
         print()
         print("Sources:")

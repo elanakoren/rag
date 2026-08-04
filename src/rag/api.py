@@ -1,4 +1,8 @@
 import anthropic
+from opentelemetry.instrumentation.anthropic import AnthropicInstrumentor
+from langfuse import propagate_attributes
+
+AnthropicInstrumentor().instrument()
 
 client = anthropic.Anthropic()
 
@@ -11,13 +15,22 @@ Rules:
 - If the excerpts don't contain enough information to answer the question, say so explicitly rather than guessing or filling gaps from general knowledge.
 - Keep your answer concise and directly responsive to the question."""
 
-def call_claude(citation_string, question):
+def call_claude(citation_string, question, book_title, current_percentage):
     message = f"{question} Here are the relevant excerpts: {citation_string}"
-    response = client.messages.create(
-        model="claude-haiku-4-5-20251001",
-        max_tokens=1000,
-        system=SYSTEM_PROMPT,
-        messages=[{"role": "user", "content": message}],
-    )
+    with propagate_attributes(
+        session_id=book_title,
+        metadata={
+            "question": question,
+            "book_title": book_title,
+            "current_percentage": current_percentage,
+        },
+        tags=["rag-query"],
+    ):
+        response = client.messages.create(
+            model="claude-haiku-4-5-20251001",
+            max_tokens=1000,
+            system=SYSTEM_PROMPT,
+            messages=[{"role": "user", "content": message}],
+        )
 
     return response.content[0].text
