@@ -49,6 +49,17 @@ def main() -> None:
                 break
             print(f"Please enter a number between 1 and {len(books)}.")
 
+    while True:
+        percentage_input = input("How far through the book are you (0-100)? ")
+        try:
+            current_percentage = float(percentage_input)
+        except ValueError:
+            print("Please enter a number between 0 and 100.")
+            continue
+        if 0 <= current_percentage <= 100:
+            break
+        print("Please enter a number between 0 and 100.")
+
     client = chromadb.PersistentClient(path="./chroma_db")
     collection = client.get_collection(name='library')
     while True:
@@ -59,7 +70,12 @@ def main() -> None:
         result = collection.query(
             query_embeddings=[encoded_question.tolist()],
             n_results=5,
-            where={"short_book_title": book_title},
+            where={
+                "$and": [
+                    {"short_book_title": book_title},
+                    {"percentage": {"$lte": current_percentage}},
+                ]
+            },
         )
         excerpts = format_result(result)
         citation_string_result = citation_string(excerpts)
