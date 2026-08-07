@@ -31,6 +31,23 @@ def index() -> None:
     store_chunks(encoded_dataset)
     add_book(book['short_book_title'])
 
+def ask_question(collection, book_title: str, current_percentage: float, question: str) -> tuple[str, list[dict]]:
+    encoded_question = encode(question)
+    result = collection.query(
+        query_embeddings=[encoded_question.tolist()],
+        n_results=15,
+        where={
+            "$and": [
+                {"short_book_title": book_title},
+                {"percentage": {"$lte": current_percentage}},
+            ]
+        },
+    )
+    excerpts = format_result(result)
+    citation_string_result = citation_string(excerpts)
+    answer = call_claude(citation_string_result, question, book_title, current_percentage)
+    return answer, excerpts
+
 def main() -> None:
     books = list_books()
     if not books:
@@ -67,20 +84,7 @@ def main() -> None:
         question = input("Ask a question (or 'quit' to exit): ")
         if question.strip().lower() in ('quit', 'exit', 'q'):
             break
-        encoded_question = encode(question)
-        result = collection.query(
-            query_embeddings=[encoded_question.tolist()],
-            n_results=15,
-            where={
-                "$and": [
-                    {"short_book_title": book_title},
-                    {"percentage": {"$lte": current_percentage}},
-                ]
-            },
-        )
-        excerpts = format_result(result)
-        citation_string_result = citation_string(excerpts)
-        answer = call_claude(citation_string_result, question, book_title, current_percentage)
+        answer, excerpts = ask_question(collection, book_title, current_percentage, question)
         print(answer)
         print()
         print("Sources:")
